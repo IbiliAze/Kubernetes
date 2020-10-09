@@ -17,11 +17,11 @@ spec:
         app: pinger
     spec:
       containers:
-       - image: ubuntu:latest
-         name: ubuntu-ctr
-         command:
-          - /bin/bash
-          - "-c"
-          - "sleep 60m"
-         imagePullPolicy: IfNotPresent
-       restartPolicy: Always
+      - image: ubuntu:latest
+        name: ubuntu-ctr
+        command:
+         - /bin/bash
+         - "-c"
+         - "sleep 60m"
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always

@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: lb-svc
   labels:
-    app: hello-world
+    app: pinger
 spec:
   type: LoadBalancer
   ports:
   - port: 8080
   selector:
-    app: hello-world
+    app: pinger
