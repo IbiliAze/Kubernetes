@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testnodes
+  labels:
+    app: testapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: testapp
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: testapp
+    spec:
+      containers:
+      - image: ibiliaze/myimage2:latest
+        name: testapp
+        command:
+        - /bin/bash
+        - "-c"
+        - "apt-get update -y"
+        - "apt update -y"
+        - "apt install httpd"
+        - "service httpd start"
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testnodes
+  labels:
+    app: testapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: testapp
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: testapp
+    spec:
+      containers:
+      - image: ibiliaze/engine:latest
+        name: engine
+        ports:
+         - containerPort: 8080
+        command:
+         - /bin/bash
+         - "-c"
+         - "sleep 60m"
+         - "apt-get update -y"
+         - "apt update -y"
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always
