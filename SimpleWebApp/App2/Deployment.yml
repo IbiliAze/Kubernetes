@@ -17,15 +17,14 @@ spec:
         app: testapp
     spec:
       containers:
-      - image: ibiliaze/engine:latest
+      - image: ibiliaze/engine2:latest
         name: engine
         ports:
-         - containerPort: 8080
+         - containerPort: 80
         command:
          - /bin/bash
          - "-c"
          - "sleep 60m"
-         - "apt-get update -y"
-         - "apt update -y"
-        imagePullPolicy: IfNotPresent
+         - "service nginx start"
+        #imagePullPolicy: IfNotPresent
       restartPolicy: Always
