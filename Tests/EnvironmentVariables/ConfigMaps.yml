@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myconfigmap
+data:
+  key1: cisco
+  key2: cisco123
+  keysecure: C1sco12345!
