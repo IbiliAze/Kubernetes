@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - image: ubuntu:latest
+    name: ubuntu:ctr
+    command:
+    - /bin/bash
+    - "-c"
+    - "cat /message/message.txt"
+    - "sleep 60m"
+    volumeMount:
+    - name: myvol1
+      mountPath: /mnt/data
+  volumes:
+  - name: myvol1
+    persistentVolumeClaim:
+      claimName: mypvc

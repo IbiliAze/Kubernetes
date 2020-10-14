@@ -18,6 +18,16 @@ kubectl get pods --all-namespaces
 
 kubectl get pods -n MyNameSpace
 
+kubectl get pods --show-labels
+
+kubectl get pods -l app=testapp
+
+kubectl get pods -l environment!=prod
+
+kubectl get pods -l 'environment in (prod,dev)'
+
+kubectl get pods -l app=testapp,environment=prod
+
 kubectl get pod MyPod
 
 kubectl get pod MyPod -n MyNameSpace -o yaml
@@ -27,6 +37,8 @@ kubectl get pod MyPod -n MyNameSpace -o yaml --export
 kubectl describe pod MyPod
 
 kubectl describe pod MyPod -n MyNameSpace
+
+kubectl describe networkpolicies MyPolicy
 
 kubectl top pods #resource usage in the default namespace
 
@@ -42,7 +54,21 @@ kubectl logs MyPod > mylog.log
 
 kubectl get svc
 
+kubectl get endpoints MyService
+
+kubectl get ep MyService
+
 kubectl get hpa
+
+kubectl get job
+
+kubectl get cronjob
+
+kubectl get networkpolicies
+
+kubectl rollout history MyDeployment
+
+kubectl rollout history MyDeployment --revision=2
 
 
 
@@ -51,6 +77,12 @@ kubectl get hpa
 kubectl create ns MyNameSpace
 
 kubectl apply -f Deployment.yml
+
+kubectl set image MyDeployment MyContainer ibiliaze/engine5:latest --record
+
+kubectl rollout undo MyDeployment
+
+kubectl rollout undo MyDeployment --to-revision=1
 
 
 
@@ -74,3 +106,5 @@ kubectl delete secret MySecret
 kubectl exec -it MyPod123 bash
 
 kubectl exec MyPod123 -- ls /etc/config
+
+kubectl edit deployment MyDeployment

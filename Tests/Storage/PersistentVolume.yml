@@ -5,9 +5,11 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
-  storageCloassName: ssd
+  storageClassName: ssd
   capacity:
     storage: 20Gi
+  hostPath:
+    path: "/mnt/data"
   persistentVolumeReclaimPolicy: Retain
   gcePersistentDoisk:
     pdName: uber-disk
