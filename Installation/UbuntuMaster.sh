@@ -24,36 +24,61 @@ echo step 7
 sudo apt install -y docker-ce 
 
 echo step 8
-sudo apt install -y kubelet
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
 
 echo step 9
-sudo apt install -y kubeadm 
+sudo mkdir -p /etc/systemd/system/docker.service.d
 
 echo step 10
-sudo apt install -y kubectl
+sudo systemctl daemon-reload
+sudo systemctl restart docker
 
 echo step 11
-sudo apt-mark hold kubeadm kubelet docker-ce
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker
 
 echo step 12
-sudo echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf 
+sudo apt install -y kubelet=1.17.8-00
 
 echo step 13
-sudo sysctl -p
+sudo apt install -y kubeadm=1.17.8-00
 
 echo step 14
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+sudo apt install -y kubectl=1.17.8-00
 
 echo step 15
-mkdir -p $HOME/.kube
+sudo apt-mark hold kubeadm kubelet docker-ce
+
+echo step 16
+sudo echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf 
 
 echo step 17
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo sysctl -p
 
 echo step 18
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+sudo swapoff -a
 
 echo step 19
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+
+echo step 20
+mkdir -p $HOME/.kube
+
+echo step 21
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+
+echo step 22
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+echo step 23
 kubectl apply -f https://docs.projectcalico.org/v3.14/manifest/calico.yaml
-
-
