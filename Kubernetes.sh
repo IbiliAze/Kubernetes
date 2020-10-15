@@ -4,6 +4,10 @@
 [HTTP GET]
 kubectl get --raw /apis/metric.k8s.io/ | jq
 
+kubectl version
+
+kubectl version --short
+
 kubectl get namespace
 
 kubectl get nodes
@@ -13,6 +17,8 @@ kubectl top nodes
 kubectl get pods
 
 kubectl get pods -o wide
+
+kubectl get pods -o custom-columns=POD:metadata.name,NODE:spec.nodeName --sort-by spec.nodeName -n kube-system
 
 kubectl get pods --all-namespaces
 
@@ -34,6 +40,10 @@ kubectl get pod MyPod -n MyNameSpace -o yaml
 
 kubectl get pod MyPod -n MyNameSpace -o yaml --export
 
+kubectl describe nodes
+
+kubectl describe pods
+
 kubectl describe pod MyPod
 
 kubectl describe pod MyPod -n MyNameSpace
@@ -54,9 +64,9 @@ kubectl logs MyPod > mylog.log
 
 kubectl get svc
 
-kubectl get endpoints MyService
+kubectl get endpoints MyEndpoint
 
-kubectl get ep MyService
+kubectl get ep MyEndpoint
 
 kubectl get hpa
 
@@ -84,6 +94,12 @@ kubectl rollout undo MyDeployment
 
 kubectl rollout undo MyDeployment --to-revision=1
 
+kubectl run nginx --image=nginx
+
+kubectl port-forward MyPod 8081:80
+
+kubectl expose deployment MyDeployment --port 80 --type NodePort
+
 
 
 
@@ -99,6 +115,23 @@ kubectl delete pod MyPod
 kubectl delete pod MyPod --now
 
 kubectl delete secret MySecret
+
+
+
+
+[Upgrade Kubernetes Cluster]
+sudo apt-mark unhold hubeadm kubelet; sudo apt install -y kubeadm=1.18.5-00; sudo apt-mark hold kubeadm #upgrade
+
+sudo kubeadm upgrade plan #show the available updates
+
+sudo kubeadm upgrade apply v1.18.5
+
+sudo apt-mark unhold kubelet kubectl; sudo apt install -y kubectl=1.18.5-00 kubelet=1.18.5-00; sudo apt-mark hold kubelet kubectl
+
+kubectl get nodes #verify node version
+
+kubectl version --short #verify master version
+
 
 
 
