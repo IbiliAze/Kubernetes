@@ -1,0 +1,23 @@
+apiVersion: extentions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-service
+spec:
+  rules:
+  - host: myapp1.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: myservice1
+          servicePort: 80
+  - host: myapp2.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: myservice2
+          servicePort: 443
+  - http: #requests to no hostnames defined
+      paths:
+      - backend:
+          serviceName: myservice3
+          servicePort: 443

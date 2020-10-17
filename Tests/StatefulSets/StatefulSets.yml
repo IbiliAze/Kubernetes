@@ -1,0 +1,25 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: testapp
+spec:
+  serviceName: myss
+  selector:
+    matchLabels:
+      app: testapp
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: testapp
+    spec:
+      containers:
+      - name: nginx
+        image: ibiliaze/engine4:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 1
+          requests:
+            cpu: 0.2

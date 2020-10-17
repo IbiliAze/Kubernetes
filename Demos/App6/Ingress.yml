@@ -1,0 +1,12 @@
+apiVersion: extentions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-service
+spec:
+  rules:
+  - host: myapp1.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: lb-svc
+          servicePort: 80
