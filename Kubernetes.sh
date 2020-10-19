@@ -104,6 +104,8 @@ kubectl create configmap MyConfigMap --from-literal=key1=value1 --from-literal=k
 
 kubectl create -f Deployment.yml --record #keep revision history
 
+kubectl create deployment --image nginx mynginx
+
 kubectl apply -f Deployment.yml
 
 kubectl replace -f Deployment.yml
