@@ -1,18 +1,8 @@
 #!/bin/bash
 
 
-[ HTTP GET ]
-kubectl get --raw /apis/metric.k8s.io/ | jq
 
-kubectl version
-
-kubectl version --short
-
-kubectl get namespace
-
-kubectl get nodes
-
-kubectl top nodes
+[ Pods ]
 
 kubectl get pods
 
@@ -40,19 +30,11 @@ kubectl get pod MyPod -n MyNameSpace -o yaml
 
 kubectl get pod MyPod -n MyNameSpace -o yaml --export
 
-kubectl describe nodes
-
 kubectl describe pods
 
 kubectl describe pod MyPod
 
 kubectl describe pod MyPod -n MyNameSpace
-
-kubectl describe networkpolicies MyPolicy
-
-kubectl describe deployment MyDeployment
-
-kubectl describe statefulsets
 
 kubectl top pods #resource usage in the default namespace
 
@@ -66,23 +48,63 @@ kubectl logs MyPod -c MyContainer
 
 kubectl logs MyPod > mylog.log
 
-kubectl get svc
+kubectl port-forward MyPod 8081:80
 
-kubectl get endpoints MyEndpoint
+kubectl delete pod MyPod
 
-kubectl get ep MyEndpoint
+kubectl delete pod MyPod --now
 
-kubectl get hpa
 
-kubectl get job
 
-kubectl get cronjob
+[ Nodes ]
+
+kubectl get nodes
+
+kubectl top nodes
+
+kubectl describe nodes
+
+kuebctl delete node MyNode
+
+
+
+[ Kubernetes ]
+
+kubectl get --raw /apis/metric.k8s.io/ | jq
+
+kubectl version
+
+kubectl version --short
+
+
+
+[ Deployments ]
+
+kubectl describe deployment MyDeployment
+
+kubectl delete deployment --all
+
+kubectl create deployment --image nginx mynginx
+
+kubectl apply -f Deployment.yml
+
+kubectl replace -f Deployment.yml
+
+kubectl scale deployment MyDeployment --replicas=5
+
+kubectl expose deployment MyDeployment --port 80 --type NodePort
+
+kubectl expose deployment MyDeployment --port 80 --type NodePort --target-port 80
+
+kubectl create -f Deployment.yml --record #keep revision history
+
+
+
+[ Networking ]
+
+kubectl describe networkpolicies MyPolicy
 
 kubectl get networkpolicies
-
-kubectl rollout history deployment MyDeployment
-
-kubectl rollout history deployment MyDeployment --revision=2
 
 kuebadm token list #list current tokens before adding to an existing cluster
 
@@ -96,66 +118,8 @@ kubectl get services -n kube-system #get DNS server IP address
 
 
 
-
-[ HTTP POST & PUT ]
-kubectl create ns MyNameSpace
-
-kubectl create configmap MyConfigMap --from-literal=key1=value1 --from-literal=key2-value2
-
-kubectl create -f Deployment.yml --record #keep revision history
-
-kubectl create deployment --image nginx mynginx
-
-kubectl apply -f Deployment.yml
-
-kubectl replace -f Deployment.yml
-
-kubectl scale deployment MyDeployment --replicas=5
-
-kubectl set image MyDeployment MyContainer ibiliaze/engine5:latest --record
-
-kubectl set image MyDeployment MyContainer ibiliaze/engine5:latest --record --v #verbose
-
-kubectl rollout undo MyDeployment
-
-kubectl rollout undo MyDeployment --to-revision=1
-
-kubectl run nginx --image=nginx
-
-kubectl port-forward MyPod 8081:80
-
-kubectl expose deployment MyDeployment --port 80 --type NodePort
-
-kubectl expose deployment MyDeployment --port 80 --type NodePort --target-port 80
-
-kubeadm token generate #run on master
-
-kubeadm token create MyToken --ttl 2h --print-join-command #run after above
-
-kubectl annotate service kubernetes externalTrafficPolicy=Local #loadbalancer send traffic to only 1 pod of the node
-
-
-
-
-[ HTTP DELETE ]
-kubectl delete svc --all
-
-kubectl delete deployment --all
-
-kubectl delete hpa --all
-
-kubectl delete pod MyPod
-
-kubectl delete pod MyPod --now
-
-kubectl delete secret MySecret
-
-kuebctl delete node MyNode
-
-
-
-
 [ Upgrade Kubernetes Cluster ]
+
 sudo apt-mark unhold hubeadm kubelet; sudo apt install -y kubeadm=1.18.5-00; sudo apt-mark hold kubeadm #upgrade
 
 sudo kubeadm upgrade plan #show the available updates
@@ -170,18 +134,24 @@ kubectl version --short #verify master version
 
 
 
-
 [ Upgrade Node OS ]
+
 kubectl drain MyNode --ignore-daemonsets #before OS update
 
 kubectl uncordon MyNode #put node back into service
 
 
 
-
 [ Upgrade Patch ]
 kubectl patch deployment MyDeployment -p '{"spec":{"minReadySeconds": 10}}' #for visuals
 
+kubectl rollout undo MyDeployment
+
+kubectl rollout undo MyDeployment --to-revision=1
+
+kubectl rollout history deployment MyDeployment
+
+kubectl rollout history deployment MyDeployment --revision=2
 
 
 
@@ -198,6 +168,85 @@ kubectl edit deployment MyDeployment
 
 kubectl edit ingress MyIngress
 
+kubectl set image MyDeployment MyContainer ibiliaze/engine5:latest --record
+
+kubectl set image MyDeployment MyContainer ibiliaze/engine5:latest --record --v #verbose
+
+kubectl run nginx --image=nginx
+
+kubectl expose deployment MyDeployment --port 80 --type NodePort
+
+kubectl expose deployment MyDeployment --port 80 --type NodePort --target-port 80
+
+kubectl port-forward MyPod 8081:80
+
+
+
+[ Services ]
+
+kubectl get svc
+
+kubectl delete svc --all
+
+kubectl annotate service kubernetes externalTrafficPolicy=Local #loadbalancer send traffic to only 1 pod of the node
+
+
+
+[ Stateful-Sets]
+
+kubectl describe statefulsets
+
+
+
+[ ASG ]
+
+kubectl get hpa
+
+kubectl delete hpa --all
+
+
+
+[ Endpoints ]
+
+kubectl get endpoints MyEndpoint
+
+kubectl get ep MyEndpoint
+
+
+
+[ Jobs ]
+
+kubectl get job
+
+kubectl get cronjob
+
+
+
+[ Namespace ]
+
+kubectl create ns MyNameSpace
+
+kubectl get namespace
+
+
+
+[ ConfigMap ]
+
+kubectl create configmap MyConfigMap --from-literal=key1=value1 --from-literal=key2-value2
+
+
+
+[ Token ]
+
+kubeadm token generate #run on master
+
+kubeadm token create MyToken --ttl 2h --print-join-command #run after above
+
+
+
+[ Secret ]
+
+kubectl delete secret MySecret
 
 
 
