@@ -64,7 +64,9 @@ kubectl top nodes
 
 kubectl describe nodes
 
-kuebctl delete node MyNode
+kubectl delete node MyNode
+
+kubectl label node MyNode key1=value1
 
 
 
@@ -100,6 +102,32 @@ kubectl create -f Deployment.yml --record #keep revision history
 
 
 
+[ Security ]
+
+cat ~/.kube/config #PKI (authentication) information
+
+curl localhost/api/v1/namespaces/testns/services #run on pod to see privilege success/fails
+
+cat /var/run/secrets/kubernetes.io/serviceaccount/token #run on pod to see service accound token
+
+kubectl get serviceaccounts
+
+kubectl get sa
+
+kubectl create serviceaccount MyAcc
+
+kubectl delete serviceaccount MyAcc
+
+kubectl get sa MyAcc -o yaml
+
+kubectl get secret testacc-token-694gs
+
+kubectl get pods MyPod -o yaml | grep serviceAccount
+
+kubectl get pods -n MyNS MyPod -o yaml | grep serviceAccount
+
+
+
 [ Networking ]
 
 kubectl describe networkpolicies MyPolicy
@@ -115,6 +143,12 @@ nsenter -t MyContainerPid -n ip addr #get pod IP address
 kubectl get deployment -n kube-system #other services, including DNS
 
 kubectl get services -n kube-system #get DNS server IP address
+
+
+
+[ Scheduler ]
+
+
 
 
 
@@ -143,6 +177,7 @@ kubectl uncordon MyNode #put node back into service
 
 
 [ Upgrade Patch ]
+
 kubectl patch deployment MyDeployment -p '{"spec":{"minReadySeconds": 10}}' #for visuals
 
 kubectl rollout undo MyDeployment
@@ -156,6 +191,7 @@ kubectl rollout history deployment MyDeployment --revision=2
 
 
 [ Configure & Comission ]
+
 kubectl exec -it MyPod123 bash
 
 kubectl exec MyPod123 -- ls /etc/config
@@ -230,6 +266,12 @@ kubectl get namespace
 
 
 
+[ Labels ]
+
+kubectl label node MyNode key1=value1
+
+
+
 [ ConfigMap ]
 
 kubectl create configmap MyConfigMap --from-literal=key1=value1 --from-literal=key2-value2
@@ -247,6 +289,8 @@ kubeadm token create MyToken --ttl 2h --print-join-command #run after above
 [ Secret ]
 
 kubectl delete secret MySecret
+
+kubectl get secret testacc-token-694gs
 
 
 
