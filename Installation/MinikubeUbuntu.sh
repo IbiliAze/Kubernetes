@@ -58,26 +58,29 @@ echo step 14
 sudo minukibe config set vm-driver none
 
 echo step 15
-sudo minikube start
+sudo minikube config set vm-driver none
 
 echo step 16
-sudo chown -R $USER $HOME $HOME/.kube $HOME/.minikube
+sudo minikube start
 
 echo step 17
-curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo chown -R $USER $HOME $HOME/.kube $HOME/.minikube
 
 echo step 18
-sudo chmod +x ./kubectl
+curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
 
 echo step 19
-sudo mv ./kubectl /usr/local/bin/kubectl
+sudo chmod +x ./kubectl
 
 echo step 20
-kubectl version --client
+sudo mv ./kubectl /usr/local/bin/kubectl
 
 echo step 21
-minikube ip
+kubectl version --client
 
 echo step 22
+minikube ip
+
+echo step 23
 sudo apt install -y nginx
 
