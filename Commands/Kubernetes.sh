@@ -80,11 +80,17 @@ kubectl version --short
 
 
 
+[ Config ]
+
+kubectl config view #kubernetes config
+
+
+
 [ Deployments ]
 
 kubectl describe deployment MyDeployment
 
-kubectl delete deployment --all
+    kubectl delete deployment --all
 
 kubectl create deployment --image nginx mynginx
 

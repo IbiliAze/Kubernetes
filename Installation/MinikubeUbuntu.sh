@@ -1,48 +1,83 @@
 #!/bin/bash
 
-
 echo step 1
-sudo apt install -y docker-ce
+sudo apt update -y
 
 echo step 2
-sudo usermod -aG docker $(echo $USER)
+sudo apt install curl
 
 echo step 3
-groups 
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
 echo step 4
-docker run hello-world
+sudo apt-add-repository  "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
 echo step 5
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+sudo apt install -y docker-ce
 
 echo step 6
-sudo dpkg -i minikube_latest_amd64.deb
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+   },
+"storage-driver": "overlay2"
+}
+EOF
 
 echo step 7
-sudo minukibe config set vm-driver none
+sudo mkdir -p /etc/systemd/system/docker.service.d
 
 echo step 8
-sudo minikube start
+sudo systemctl daemon-reload
+sudo systemctl restart docker
 
 echo step 9
-sudo chown -R $USER $HOME $HOME/.kube $HOME/.minikube
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker
 
 echo step 10
-curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo usermod -aG docker $(echo $USER)
 
 echo step 11
-sudo chmod +x ./kubectl
+groups 
 
 echo step 12
-sudo mv ./kubectl /usr/local/bin/kubectl
+docker run hello-world
 
 echo step 13
-kubectl version --client
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
 
 echo step 14
-minikube ip
+sudo dpkg -i minikube_latest_amd64.deb
+
+echo step 14
+sudo minukibe config set vm-driver none
 
 echo step 15
+sudo minikube start
+
+echo step 16
+sudo chown -R $USER $HOME $HOME/.kube $HOME/.minikube
+
+echo step 17
+curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+
+echo step 18
+sudo chmod +x ./kubectl
+
+echo step 19
+sudo mv ./kubectl /usr/local/bin/kubectl
+
+echo step 20
+kubectl version --client
+
+echo step 21
+minikube ip
+
+echo step 22
 sudo apt install -y nginx
 
