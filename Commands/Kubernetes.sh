@@ -84,6 +84,8 @@ kubectl version --short
 
 kubectl config view #kubernetes config
 
+kubectl config current-context
+
 
 
 [ Deployments ]
