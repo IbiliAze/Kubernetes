@@ -54,9 +54,6 @@ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest
 echo step 14
 sudo dpkg -i minikube_latest_amd64.deb
 
-echo step 14
-sudo minukibe config set vm-driver none
-
 echo step 15
 sudo minikube config set vm-driver none
 
