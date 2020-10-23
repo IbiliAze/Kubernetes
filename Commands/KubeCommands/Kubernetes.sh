@@ -86,6 +86,8 @@ kubectl config view #kubernetes config
 
 kubectl config current-context
 
+kubectl config set-credentials MyUser  --username=MyUser --password=MyPassword
+
 
 
 [ Deployments ]
@@ -133,6 +135,8 @@ kubectl get secret testacc-token-694gs
 kubectl get pods MyPod -o yaml | grep serviceAccount
 
 kubectl get pods -n MyNS MyPod -o yaml | grep serviceAccount
+
+kubectl config set-credentials MyUser  --username=MyUser --password=MyPassword
 
 
 
