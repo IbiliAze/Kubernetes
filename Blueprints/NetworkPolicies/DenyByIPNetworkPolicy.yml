@@ -16,7 +16,7 @@ spec:
        - 10.4.2.3/32
     - podSelector:
        matchLabels:
-         app: testapp
+         app: testdb
     ports:
     - protocol: TCP
       port: 80
