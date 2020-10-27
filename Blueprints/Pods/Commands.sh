@@ -1,6 +1,8 @@
 #!/bin/bash
 
 
+[ Get Pods ]
+
 kubectl get pods
 
 kubectl get pods -o wide
@@ -27,11 +29,19 @@ kubectl get pod MyPod -n MyNameSpace -o yaml
 
 kubectl get pod MyPod -n MyNameSpace -o yaml --export
 
+
+
+[ Describe Pods ]
+
 kubectl describe pods
 
 kubectl describe pod MyPod
 
 kubectl describe pod MyPod -n MyNameSpace
+
+
+
+[ Top Pods ]
 
 kubectl top pods #resource usage in the default namespace
 
@@ -39,14 +49,26 @@ kubectl top pod MyPod
 
 kubectl top pods -n MyNameSpace
 
+
+
+[ Logs ]
+
 kubectl logs MyPod
 
 kubectl logs MyPod -c MyContainer
 
 kubectl logs MyPod > mylog.log
 
+
+
+[ Delete ]
+
 kubectl delete pod MyPod
 
 kubectl delete pod MyPod --now
 
 
+
+[ Port-Forward]
+
+kubectl port-forward MyPod 8081:80

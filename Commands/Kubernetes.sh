@@ -2,60 +2,6 @@
 
 
 
-[ Pods ]
-
-kubectl get pods
-
-kubectl get pods -o wide
-
-kubectl get pods -o custom-columns=POD:metadata.name,NODE:spec.nodeName --sort-by spec.nodeName -n kube-system
-
-kubectl get pods --all-namespaces
-
-kubectl get pods -n MyNameSpace
-
-kubectl get pods --show-labels
-
-kubectl get pods -l app=testapp
-
-kubectl get pods -l environment!=prod
-
-kubectl get pods -l 'environment in (prod,dev)'
-
-kubectl get pods -l app=testapp,environment=prod
-
-kubectl get pod MyPod
-
-kubectl get pod MyPod -n MyNameSpace -o yaml
-
-kubectl get pod MyPod -n MyNameSpace -o yaml --export
-
-kubectl describe pods
-
-kubectl describe pod MyPod
-
-kubectl describe pod MyPod -n MyNameSpace
-
-kubectl top pods #resource usage in the default namespace
-
-kubectl top pod MyPod
-
-kubectl top pods -n MyNameSpace
-
-kubectl logs MyPod
-
-kubectl logs MyPod -c MyContainer
-
-kubectl logs MyPod > mylog.log
-
-kubectl port-forward MyPod 8081:80
-
-kubectl delete pod MyPod
-
-kubectl delete pod MyPod --now
-
-
-
 [ Nodes ]
 
 kubectl get nodes
@@ -94,7 +40,7 @@ kubectl config set-credentials MyUser  --username=MyUser --password=MyPassword
 
 kubectl describe deployment MyDeployment
 
-    kubectl delete deployment --all
+kubectl delete deployment --all
 
 kubectl create deployment --image nginx mynginx
 
@@ -118,24 +64,6 @@ cat ~/.kube/config #PKI (authentication) information
 
 curl localhost/api/v1/namespaces/testns/services #run on pod to see privilege success/fails
 
-cat /var/run/secrets/kubernetes.io/serviceaccount/token #run on pod to see service accound token
-
-kubectl get serviceaccounts
-
-kubectl get sa
-
-kubectl create serviceaccount MyAcc
-
-kubectl delete serviceaccount MyAcc
-
-kubectl get sa MyAcc -o yaml
-
-kubectl get secret testacc-token-694gs
-
-kubectl get pods MyPod -o yaml | grep serviceAccount
-
-kubectl get pods -n MyNS MyPod -o yaml | grep serviceAccount
-
 kubectl config set-credentials MyUser  --username=MyUser --password=MyPassword
 
 
@@ -155,12 +83,6 @@ nsenter -t MyContainerPid -n ip addr #get pod IP address
 kubectl get deployment -n kube-system #other services, including DNS
 
 kubectl get services -n kube-system #get DNS server IP address
-
-
-
-[ Scheduler ]
-
-
 
 
 
@@ -230,43 +152,11 @@ kubectl port-forward MyPod 8081:80
 
 
 
-[ Services ]
-
-kubectl get svc
-
-kubectl delete svc --all
-
-kubectl annotate service kubernetes externalTrafficPolicy=Local #loadbalancer send traffic to only 1 pod of the node
-
-
-
-[ Stateful-Sets]
-
-kubectl describe statefulsets
-
-
-
-[ ASG ]
-
-kubectl get hpa
-
-kubectl delete hpa --all
-
-
-
 [ Endpoints ]
 
 kubectl get endpoints MyEndpoint
 
 kubectl get ep MyEndpoint
-
-
-
-[ Jobs ]
-
-kubectl get job
-
-kubectl get cronjob
 
 
 
@@ -295,18 +185,6 @@ kubectl create configmap MyConfigMap --from-literal=key1=value1 --from-literal=k
 kubeadm token generate #run on master
 
 kubeadm token create MyToken --ttl 2h --print-join-command #run after above
-
-
-
-[ Secret ]
-
-kubectl delete secret MySecret
-
-kubectl get secret testacc-token-694gs
-
-
-
-[ etcd ]
 
 
 
