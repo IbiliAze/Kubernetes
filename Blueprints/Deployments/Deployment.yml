@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testdeployment
+spec:
+  selector:
+    matchLabels:
+      app: testdeployment
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: testdeployment    
+    spec:
+      containers:
+      - name: myimage
+        image: nginx:latest  
+        ports:
+        - containerPort: 80 
