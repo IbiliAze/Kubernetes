@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  labels:
+    name: mongo
+spec:
+  selector:
+    matchLabels:
+      name: mypod2
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        name: mypod2
+    spec:
+      containers:
+        - image: mongo
+          name: mongodb
+          ports:
+          - containerPort: 27017
+            protocol: TCP
+
+
