@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pcv1
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: ssd
+  resources:
+    request:
+      storage: 1Gi  
