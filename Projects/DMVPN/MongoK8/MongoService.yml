@@ -9,3 +9,4 @@ spec:
     targetPort: 27017
   selector:
     name: mypod2
+  clusterIP: 10.8.0.50
