@@ -76,9 +76,8 @@ kubectl get networkpolicies
 
 kuebadm token list #list current tokens before adding to an existing cluster
 
-docker inspect --format '{ .State.Pid }' MyPod #get container process ID
-
-nsenter -t MyContainerPid -n ip addr #get pod IP address
+docker inspect --format '{{ .State.Pid }}' ContainerId #get container process ID
+nsenter -n -t MyContainerPid ip addr #-n=network namespace -> empty=pid NS, -t=target, run a command within the processes' network namespace
 
 kubectl get deployment -n kube-system #other services, including DNS
 
