@@ -15,11 +15,11 @@ spec:
         name: mypod2
     spec:
       containers:
-        - image: mongo
-          name: mongodb
-          ports:
-          - containerPort: 27017
-            protocol: TCP
+      - image: mongo
+        name: mongodb
+        ports:
+        - containerPort: 27017
+          protocol: TCP
         volumeMounts:
         - mountPath: /data/db
           name: data

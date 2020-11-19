@@ -7,5 +7,5 @@ spec:
   - ReadWriteOnce
   storageClassName: sc1
   resources:
-    request:
+    requests:
       storage: 1Gi  
