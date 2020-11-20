@@ -24,6 +24,14 @@ kubectl version
 
 kubectl version --short
 
+kubectl get componentstatus
+
+kubectl get pods -n kube-system
+
+kubectl get pods -n kube-system -o custom-columns=POD:metadata.name,NODE:spec.nodeName --sort-by spec.nodeName
+
+kubectl get endpoints kube-scheduler -n kube-system -o yaml #master control plane node elector
+
 
 
 [ Config ]

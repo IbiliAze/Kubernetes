@@ -29,6 +29,12 @@ kubectl get pod MyPod -n MyNameSpace -o yaml
 
 kubectl get pod MyPod -n MyNameSpace -o yaml --export
 
+kubectl get pods --field-selector status.phase=Running #filter
+
+kubectl get pods --field-selector metadata.namespace=default
+
+kubectl get pods --field-selector status.phase=Running,metadata.namespace=default
+
 
 
 [ Describe Pods ]
