@@ -75,6 +75,15 @@ curl localhost/api/v1/namespaces/testns/services #run on pod to see privilege su
 kubectl config set-credentials MyUser  --username=MyUser --password=MyPassword
 
 
+{Service Accounts}
+kubectl create ns my-ns
+kubectl run test --image=chadmcrowell/kubectl-proxy -n my-ns
+kubectl exec -it test -n my-ns sh
+curl localhost:8001 #should be a forbidden request
+exit
+kubectl get sa
+
+
 
 [ Networking ]
 
