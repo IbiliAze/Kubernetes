@@ -55,6 +55,8 @@ kubectl top pod MyPod
 
 kubectl top pods -n MyNameSpace
 
+kubectl top pods --sort-by cpu
+
 
 
 [ Logs ]

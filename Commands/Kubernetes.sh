@@ -14,9 +14,19 @@ kubectl delete node MyNode
 
 kubectl label node MyNode key1=value1
 
+kubectl drain myNode
+
+kubectl drain myNode --ignore-daemonsets #--ignore-daemonsets=ignore pods tied to each node (kube-system pods)
+
+kubectl drain gke-cluster-1-default-pool-cb7a459d-ccnf --ignore-daemonsets --force #will delete the pod with no deployment
+
+kubectl uncordon myNode #run pods on the nodes again, e.g after an K8s version upgrade
+
 
 
 [ Kubernetes ]
+
+kubeadm init --config myconfig.yml #initialise a cluster from a YAML file
 
 kubectl get --raw /apis/metric.k8s.io/ | jq
 
@@ -28,13 +38,17 @@ kubectl get componentstatus
 
 kubectl get pods -n kube-system
 
-kubectl get pods -n kube-system -o custom-columns=POD:metadata.name,NODE:spec.nodeName --sort-by spec.nodeName
+kubectl get pods -n kube-system -o custom-columns=POD:metadata.name,NODE:spec.nodeName --sort-by spec.nodeName #--sort-by=JSON path expression (-o json)
+
+kubectk get pods -n kube-system --selector k8s-app=prometheus-to-sd #--selector=match labels
 
 kubectl get endpoints kube-scheduler -n kube-system -o yaml #master control plane node elector
 
 
 
 [ Config ]
+
+kubeadm init --config myconfig.yml #initialise a cluster from a YAML file
 
 kubectl config view #kubernetes config
 
@@ -114,31 +128,46 @@ kubectl logs coredns-4234b2342424-2vfv -n kube-system
 
 
 
-[ Upgrade Kubernetes Cluster ]
+[ Upgrade Cluster ] 
 
-sudo apt-mark unhold hubeadm kubelet; sudo apt install -y kubeadm=1.18.5-00; sudo apt-mark hold kubeadm #upgrade
-
+{kubeadm}
+#Master Node
+sudo apt update -y
+sudo apt install -y kubeadm=1.19.2-00 --allow-change-held-packages #upgrade the kubeadm package
+kubectl drain MyControlPlaneNode --ignore-daemonsets #before OS update
+kubectl drain MyWorkerNode --ignore-daemonsets
 sudo kubeadm upgrade plan #show the available updates
+sudo kubeadm upgrade apply v1.19.2
 
-sudo kubeadm upgrade apply v1.18.5
-
-sudo apt-mark unhold kubelet kubectl; sudo apt install -y kubectl=1.18.5-00 kubelet=1.18.5-00; sudo apt-mark hold kubelet kubectl
-
-kubectl get nodes #verify node version
-
-kubectl version --short #verify master version
+#Worker Node
+sudo apt update -y
+sudo apt install -y kubeadm=1.19.2-00 --allow-change-held-packages
+sudo kubeadm upgrade node
 
 
+{kubectl & kubelet}
+#Master Node
+sudo apt update -y
+sudo apt install -y kubelet=1.19.2-00 kubectl=1.19.2-00 --allow-change-held-packages
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+kubectl get nodes
 
-[ Upgrade Node OS ]
+#Worker Node
+sudo apt update -y
+sudo apt install -y kubelet=1.19.2-00 kubectl=1.19.2-00 --allow-change-held-packages
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
 
-kubectl drain MyNode --ignore-daemonsets #before OS update
 
-kubectl uncordon MyNode #put node back into service
+{Final uncordoning}
+#Master Node
+kubectl uncordon MyControlPlaneNode
+kubectl uncordon MyWorkerNode
 
 
 
-[ Upgrade Patch ]
+[ Patch ]
 
 kubectl patch deployment MyDeployment -p '{"spec":{"minReadySeconds": 10}}' #for visuals
 
@@ -213,6 +242,22 @@ kubectl create configmap MyConfigMap --from-literal=key1=value1 --from-literal=k
 kubeadm token generate #run on master
 
 kubeadm token create MyToken --ttl 2h --print-join-command #run after above
+
+
+
+[ etcd ]
+
+etcdctl snapshot save #backup
+
+etcdctl snapshot restore #creates a temprary logical cluster
+
+
+
+
+
+
+
+
 
 
 

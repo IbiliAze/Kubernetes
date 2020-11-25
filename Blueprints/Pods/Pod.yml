@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
   - image: ubuntu:latest
-    name: ubuntu:ctr
+    name: ubuntu
     command:
     - /bin/bash
     - "-c"
