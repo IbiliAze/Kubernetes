@@ -4,9 +4,9 @@ const router = new express.Router();
 const Config = require('../models/config');
 const Site = require('../models/site');
 
-const doesSiteExist = require('../middleware/doesSiteExist');
 const doesConfigExist = require('../middleware/doesConfigExist');
 const authenticateToken = require('../middleware/authenticateToken');
+const configQuerystring = require('../middleware/configQuerystring');
 
 
 // Routes
@@ -43,24 +43,8 @@ router.post('/config', authenticateToken, async (request, response) => {
 
 
 // GET /api/config
-router.get('/config', authenticateToken, async (request, response) => {
+router.get('/config', authenticateToken, configQuerystring, async (request, response) => {
     try {
-        if (request.query.siteId) {
-            const siteId = request.query.siteId;
-
-            const site = await Site.findOne({ _id: siteId, orgId: request.org._id });
-            if (!site) {
-                console.error(`Site not found, ID: ${siteId}`);
-                return response.status(404).send({
-                    error: 'Site not found',
-                    ID: siteId
-                });
-            };
-
-            const configs = await Config.find({ orgId: request.org._id, siteId: siteId });
-            console.log(`Configs fetched successfully`);
-            return response.status(200).send(configs);
-        };
         const configs = await Config.find({ orgId: request.org._id });
         console.log(`Configs fetched successfully`);
         response.status(200).send(configs);
@@ -76,7 +60,7 @@ router.get('/config', authenticateToken, async (request, response) => {
 // GET /api/config by ID
 router.get('/config/:id', authenticateToken, doesConfigExist, async (request, response) => {
     try {
-        const config = await Config.findOne({ _id: request.params.id, orgId: request.org._id });
+        const config = request.config;
         await config.populate('siteId').execPopulate();
         console.log(`Config fetched successfully, ID: ${config._id}`);
         response.status(200).send(config);
@@ -99,7 +83,7 @@ router.put('/config/:id', authenticateToken, doesConfigExist, async (request, re
         return response.status(400).send({error: `Invalid update`});
     };
     try {
-        const config = await Config.findOne({ _id: request.params.id, orgId: request.org._id });
+        const config = request.config;
         updates.forEach((update) => config[update] = request.body[update] );
         await config.save();
         console.log(`Config updated successfully, ID: ${request.params.id}`);
@@ -116,7 +100,7 @@ router.put('/config/:id', authenticateToken, doesConfigExist, async (request, re
 // DELETE /api/config by ID
 router.delete('/config/:id', authenticateToken, doesConfigExist, async (request, response) => {
     try {
-        const config = await Config.findOne({ _id: request.params.id, orgId: request.org._id });
+        const config = request.config;
         await config.remove();
         console.log(`Config deleted successfully, ID: ${request.params.id}`);
         response.status(200).send({message: `Config deleted successfully`, ID: request.params.id});
@@ -127,7 +111,6 @@ router.delete('/config/:id', authenticateToken, doesConfigExist, async (request,
         });
     };
 });
-
 
 
 module.exports = router;

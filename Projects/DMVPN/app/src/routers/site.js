@@ -4,8 +4,8 @@ const router = new express.Router();
 const Site = require('../models/site');
 
 const doesSiteExist = require('../middleware/doesSiteExist');
-const doesOrgExist = require('../middleware/doesOrgExist');
 const authenticateToken = require('../middleware/authenticateToken');
+const siteQuerystring = require('../middleware/siteQuerystring');
 
 
 // Routes
@@ -32,7 +32,7 @@ router.post('/site', authenticateToken, async (request, response) => {
 
 
 // GET /api/site
-router.get('/site', authenticateToken, async (request, response) => {
+router.get('/site', authenticateToken, siteQuerystring, async (request, response) => {
     try {
         const sites = await Site.find({ orgId: request.org._id });
         console.log(`Sites fetched successfully`);
@@ -48,18 +48,9 @@ router.get('/site', authenticateToken, async (request, response) => {
 
 // GET /api/site by ID
 router.get('/site/:id', authenticateToken, doesSiteExist, async (request, response) => {
-    const _id = request.params.id;
     try {
-        const site = await Site.findOne({ _id, orgId: request.org._id });
+        const site = request.site;
         await site.populate('orgId').execPopulate();
-        if (!site) {
-            console.error(`Site not found, ID: ${_id}`);
-            return response.status(404).send({
-                error: 'Site not found',
-                ID: request.params.id
-            });
-        };
-
         console.log(`Site fetched successfully, ID: ${site._id}`);
         response.status(200).send(site);
     } catch (error) {
@@ -81,7 +72,7 @@ router.put('/site/:id', authenticateToken, doesSiteExist, async (request, respon
         return response.status(400).send({error: `Invalid update`});
     };
     try {
-        const site = await Site.findOne({ _id: request.params.id, orgId: request.org._id });
+        const site = request.site;
         updates.forEach((update) => site[update] = request.body[update] );
         await site.save();
         console.log(`Site updated successfully, ID: ${request.params.id}`);
@@ -98,7 +89,7 @@ router.put('/site/:id', authenticateToken, doesSiteExist, async (request, respon
 // DELETE /api/site by ID
 router.delete('/site/:id', authenticateToken, doesSiteExist, async (request, response) => {
     try {
-        const site = await Site.findOne({ _id: request.params.id, orgId: request.org._id });
+        const site = request.site;
         await site.remove();
         console.log(`Site deleted successfully, ID: ${request.params.id}`);
         response.status(200).send({message: `Site deleted successfully`, ID: request.params.id});
@@ -109,7 +100,6 @@ router.delete('/site/:id', authenticateToken, doesSiteExist, async (request, res
         });
     };
 });
-
 
 
 module.exports = router;

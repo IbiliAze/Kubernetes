@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node
+  labels:
+    name: node
+spec:
+  selector:
+    matchLabels:
+      name: mypod
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        name: mypod
+    spec:
+      containers:
+      - image: ibiliaze/dmvpn1:latest
+        name: dmvpn
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: configmap-volume
+          mountPath: /etc/config/configmap
+        - name: secret-volume
+          mountPath: /etc/config/secret
+
+      volumes:
+      - name: configmap-volume
+        configMap:
+          name: configmap
+      - name: secret-volume
+        secret:
+          name: secret

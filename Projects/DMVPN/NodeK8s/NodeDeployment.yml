@@ -15,7 +15,43 @@ spec:
         name: mypod
     spec:
       containers:
-        - image: ibiliaze/dmvpn1:latest
-          name: dmvpn
-          ports:
-          - containerPort: 5000
+      - image: ibiliaze/dmvpn1:latest
+        name: dmvpn
+        ports:
+        - containerPort: 5000
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: PORT
+        - name: MONGOOSE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: MONGOOSE_URL
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: DATABASE_NAME
+        - name: LOCAL_EMAIL
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: LOCAL_EMAIL
+        - name: SENDGRID_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: secret
+              key: SENDGRID_API_KEY
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: secret
+              key: JWT_SECRET
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secret
+              key: MONGODB_PASSWORD

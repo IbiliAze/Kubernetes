@@ -11,6 +11,8 @@ const doesConfigExist = async (request, response, next) => {
                 ID: request.params.id
             });
         };
+
+        request.config = config;
         next();
     } catch (error) {
         console.error(error);

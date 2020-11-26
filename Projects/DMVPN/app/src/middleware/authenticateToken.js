@@ -12,7 +12,7 @@ const authenticateToken = async (request, response, next) => {
         };
 
         const token = request.headers.authorization.replace('Bearer ', '');
-        const decodedToken = jwt.verify(token, 'privatesecret');
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const org = await Org.findOne({ _id: decodedToken._id, 'tokens.token': token });
         if (!org) {
             throw new Error();

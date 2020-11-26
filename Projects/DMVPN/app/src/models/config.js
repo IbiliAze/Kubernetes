@@ -168,10 +168,18 @@ const configSchema = new mongoose.Schema({
             }
         }
     },
-    spokes: {
-        type: Array,
-        required: true
-    },
+    spokes: [
+        {
+            type: String,
+            required: true,
+            validate(value) {
+                if (value.length < 15) {
+                    console.error('Invalid IP address');
+                    throw new Error('Invalid IP address');
+                }
+            }
+        }
+    ],
     eigrp: {
         type: Boolean,
         required: true,
@@ -180,7 +188,19 @@ const configSchema = new mongoose.Schema({
         type: Number,
         required: false
     }
+}, {
+    timestamps: true
 });
+
+
+configSchema.methods.toJSON = function () {
+    const config = this
+    const configObject = config.toObject();
+
+    delete configObject.__v;
+
+    return configObject;
+};  
 
 
 configSchema.pre('save', async function(next) {

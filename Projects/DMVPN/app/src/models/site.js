@@ -7,6 +7,7 @@ const siteSchema = new mongoose.Schema({
     siteName: {
         type: String,
         required: true,
+        lowercase: true,
         validate(value) {
             if (value.length < 2) {
                 console.error(`Site Name is too short`);
@@ -22,22 +23,28 @@ const siteSchema = new mongoose.Schema({
     description: {
         type: String,
         required: false,
-        default: "Site description"
+        lowercase: true,
+        default: "site description"
     },
     type: {
         type: String,
         required: false,
+        lowercase: true,
         default: 'HQ'
     },
     department: {
         type: String,
         required: false,
+        lowercase: true,
         default: 'IT'
     },
     floor: {
         type: String,
+        lowercase: true,
         required: false
     }
+}, {
+    timestamps: true
 });
 
 
@@ -57,14 +64,13 @@ siteSchema.methods.toJSON = function () {
 
 siteSchema.pre('remove', async function (next) {
     const site = this;
-    await Config.deleteMany({ siteId: site._id, orgId: site.orgId });
+    await Config.deleteMany({ orgId: site.orgId, siteId: site._id });
 
     next();
 });
 
 
 const Site = mongoose.model('Site', siteSchema);
-
 
 
 module.exports = Site;
