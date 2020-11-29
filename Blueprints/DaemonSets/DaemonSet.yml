@@ -1,17 +1,16 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  name: testdeployment
+  name: my-daemonset
 spec:
   selector:
     matchLabels:
-      app: testdeployment
-  replicas: 3
+      app: my-daemonset
   template:
     metadata:
       labels:
-        app: testdeployment    
+        app: my-daemonset
     spec:
       containers:
       - name: nginx
-        image: nginx:1.19.1
+        image: nginx

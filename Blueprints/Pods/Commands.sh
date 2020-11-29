@@ -80,3 +80,18 @@ kubectl delete pod MyPod --now
 [ Port-Forward]
 
 kubectl port-forward MyPod 8081:80
+
+
+
+[ Static Pods ]
+
+sudo cd /etc/kubernetes/manifest/ #default manifest path for kubeadm on the worker node
+sudo vim my-static-pod.yml #kubelet will automatically check that directory and create the static pod
+kubectl get pods #the pod shown will the Mirror Pod
+
+sudo systemctl restart kubelet #speed up the step above
+
+
+
+
+

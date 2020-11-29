@@ -58,28 +58,6 @@ kubectl config set-credentials MyUser  --username=MyUser --password=MyPassword
 
 
 
-[ Deployments ]
-
-kubectl describe deployment MyDeployment
-
-kubectl delete deployment --all
-
-kubectl create deployment --image nginx mynginx
-
-kubectl apply -f Deployment.yml
-
-kubectl replace -f Deployment.yml
-
-kubectl scale deployment MyDeployment --replicas=5
-
-kubectl expose deployment MyDeployment --port 80 --type NodePort
-
-kubectl expose deployment MyDeployment --port 80 --type NodePort --target-port 80
-
-kubectl create -f Deployment.yml --record #keep revision history
-
-
-
 [ Security ]
 
 cat ~/.kube/config #PKI (authentication) information
@@ -169,11 +147,17 @@ kubectl uncordon MyWorkerNode
 
 [ Patch ]
 
+kubectl rollout status deployment MyDeployment
+
 kubectl patch deployment MyDeployment -p '{"spec":{"minReadySeconds": 10}}' #for visuals
 
 kubectl rollout undo MyDeployment
 
 kubectl rollout undo MyDeployment --to-revision=1
+
+kubectl set image deployment MyDeployment nginx=nginx:1.19.2 #another way to update the image
+
+kubectl set image deployment MyDeployment nginx=nginx:1.19.2 --record #will keep deployment hostory
 
 kubectl rollout history deployment MyDeployment
 
@@ -187,7 +171,7 @@ kubectl exec -it MyPod123 bash
 
 kubectl exec MyPod123 -- ls /etc/config
 
-kubectl exec -t testapp-888d4f679-cpf4f -- cat /etc/resolv.conf #see the pod DNS entry
+kubectl exec -it testapp-888d4f679-cpf4f -- cat /etc/resolv.conf #see the pod DNS entry
 
 kubectl exec -it testapp-888d4f679-cpf4f -- nslookup kubernetes #see the kubernetes service DNS name
 
@@ -240,7 +224,6 @@ kubectl create configmap MyConfigMap --from-literal=key1=value1 --from-literal=k
 [ Token ]
 
 kubeadm token generate #run on master
-
 kubeadm token create MyToken --ttl 2h --print-join-command #run after above
 
 

@@ -6,6 +6,7 @@ metadata:
     app: hello-world
 spec:
   type: ClusterIP
+  ClusterIP: 10.8.0.50
   ports:
   - port: 8080
     targetPort: 80

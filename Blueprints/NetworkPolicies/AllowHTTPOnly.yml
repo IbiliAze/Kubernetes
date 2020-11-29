@@ -1,10 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: mypolicy
+  name: deny-all
   namespace: np-test
 spec:
-  podSelector:
+  podSelector: 
     matchLabels:
       app: nginx
   policyTypes:
@@ -12,17 +12,9 @@ spec:
   - Egress
   ingress:
   - from:
-    - podSelector:
+    - namespaceSelector:
         matchLabels:
-          allow-access: "true"
-    ports:
-    - protocol: TCP
-      port: 80
-  egress:
-  - to:
-    - podSelector:
-        matchLabels:
-          allow-access: "true"
+          team: tp-test
     ports:
     - protocol: TCP
       port: 80
