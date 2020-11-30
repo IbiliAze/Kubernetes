@@ -105,6 +105,10 @@ kubectl exec -it node-54fdfb47f8-6w7vk -- nslookup metrics-server.default.svc.cl
 kubectl logs coredns-4234b2342424-2vfv -n kube-system
 
 
+{netshoot}
+kubectl run netshoot --image nikolaka/netshoot
+
+
 
 [ Upgrade Cluster ] 
 
