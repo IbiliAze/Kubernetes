@@ -14,3 +14,7 @@ kubectl apply -f ENV/ClusterRole.yml
 
 kubectl apply -f ENV/KubeStateMetrics.yml
 
+kubectl apply -f Grafana/GrafanaDeployment.yml
+
+kubectl apply -f Grafana/GrafanaService.yml
+
