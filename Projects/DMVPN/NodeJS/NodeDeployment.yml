@@ -8,11 +8,15 @@ spec:
   selector:
     matchLabels:
       name: mypod
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
         name: mypod
+      annotations:
+        prometheus.io/srape: 'true'
+        prometheus.io/path: '/swagger-stats/metrics'
+        prometheus.io/port: '5000'
     spec:
       containers:
       - image: ibiliaze/dmvpn1:latest

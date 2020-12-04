@@ -4,7 +4,9 @@
 
 kubectl apply -f Environment/Namespace.yml
 
-kubectl apply -f Prometheus/PrometheusConfigMap.yml
+kubectl apply -f Prometheus/PrometheusConfigMapPrometheus.yml
+
+kubectl apply -f Prometheus/PrometheusConfigMapRules.yml
 
 kubectl apply -f Prometheus/PrometheusDeployment.yml
 
