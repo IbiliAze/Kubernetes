@@ -64,7 +64,7 @@ cat ~/.kube/config #PKI (authentication) information
 
 curl localhost/api/v1/namespaces/testns/services #run on pod to see privilege success/fails
 
-kubectl config set-credentials MyUser  --username=MyUser --password=MyPassword
+kubectl config set-credentials MyUser  --username=MyUser --password=MyPassword #add a user to manage the cluster with kubectl
 
 
 {Service Accounts}
