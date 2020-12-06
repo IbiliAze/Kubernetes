@@ -31,9 +31,9 @@ data:
       - job_name: 'node-exporter'
         static_configs:
         - targets: 
-          - '10.128.0.2:9100'
-          - '10.128.0.5:9100'
-          - '10.128.0.7:9100'
+          - '10.128.15.233:9100'
+          - '10.128.15.234:9100'
+          - '10.128.0.8:9100'
       - job_name: 'kubernetes-apiservers'
         kubernetes_sd_configs:
         - role: endpoints

@@ -20,3 +20,9 @@ kubectl apply -f Grafana/GrafanaDeployment.yml
 
 kubectl apply -f Grafana/GrafanaService.yml
 
+kubectl apply -f AlertManager/AlertmanagerConfigMap.yml
+
+kubectl apply -f AlertManager/AlertmanagerDeployment.yml
+
+kubectl apply -f AlertManager/AlertmanagerService.yml
+
