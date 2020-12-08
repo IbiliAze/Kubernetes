@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod-liveness
+spec:
+  containers:
+  - image: nginx:latest
+    name: nginx
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 8081

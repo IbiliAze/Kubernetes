@@ -3,17 +3,16 @@ kind: Pod
 metadata:
   name: mypod
 spec:
-  securityContext:
-    capabilities:
-      drop: ["CHOWN"]
   containers:
-  - image: ubuntu:latest
-    name: ubuntu:ctr
+  - image: nginx
+    name: nginx
     command:
     - /bin/bash
     - "-c"
-    - "cat /message/message.txt"
     - "sleep 60m"
+    securityContext:
+      runAsUser: 2000 #user ID
+        fsGroup: 3000 #group ID
     volumeMounts:
     - name: message-volume
       mountPath: /message

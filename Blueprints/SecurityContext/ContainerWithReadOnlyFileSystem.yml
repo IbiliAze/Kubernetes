@@ -1,0 +1,21 @@
+# Can't write to local filesystem. Can write to /volume
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    command:
+    - /bin/bash
+    - "-c"
+    - "sleep 60m"
+    securityContext:
+      readOnlyRootFilesystem: true
+    volumeMounts:
+    - name: my-volume
+      mountPath: /volume
+  volumes:
+  - name: my-volume
+    emptyDir: {}

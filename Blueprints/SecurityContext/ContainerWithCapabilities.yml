@@ -3,17 +3,16 @@ kind: Pod
 metadata:
   name: mypod
 spec:
-  securityContext:
-    capabilities:
-      add: ["NET_ADMIN", "SYS_TIME"]
   containers:
-  - image: ubuntu:latest
-    name: ubuntu:ctr
+  - image: nginx
+    name: nginx
     command:
     - /bin/bash
     - "-c"
-    - "cat /message/message.txt"
     - "sleep 60m"
+    securityContext:
+      capabilities:
+        add: ["NET_ADMIN", "SYS_TIME"]
     volumeMounts:
     - name: message-volume
       mountPath: /message

@@ -64,7 +64,18 @@ cat ~/.kube/config #PKI (authentication) information
 
 curl localhost/api/v1/namespaces/testns/services #run on pod to see privilege success/fails
 
+
+{Adding a kubectl user}
+# On the Master
 kubectl config set-credentials MyUser  --username=MyUser --password=MyPassword #add a user to manage the cluster with kubectl
+kubectl create clusterrolebinding cluster-system-anonymous --clusterrole=cluster-admin  --user=system:anonymous
+scp /etc/kubernetes/pki/ca.crt ibi@myaddress:~/
+# On the user
+kubectl config set-cluster kubernetes --server=https://35.184.82.142:6443 --certificate-authority=~/ca.crt --embed-certs=true
+kubectl config set-credentials MyUser  --username=MyUser --password=MyPassword
+kubectl config set-context kubernetes --cluster=kubernetes --user=MyUser --namespace=default
+kubectl config use-context kubernetes
+kubectl get nodes
 
 
 {Service Accounts}

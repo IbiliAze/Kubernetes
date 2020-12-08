@@ -27,7 +27,7 @@ kubectl get pod MyPod
 
 kubectl get pod MyPod -n MyNameSpace -o yaml
 
-kubectl get pod MyPod -n MyNameSpace -o yaml --export
+kubectl get pod MyPod -n MyNameSpace -o yaml --export #export the YAML of a pod definion, can redirect optionally with >
 
 kubectl get pods --field-selector status.phase=Running #filter
 
@@ -56,6 +56,10 @@ kubectl top pod MyPod
 kubectl top pods -n MyNameSpace
 
 kubectl top pods --sort-by cpu
+
+kubectl top pods -l mykey=myvalue
+
+kubectl top pods MyPod --containers
 
 
 
