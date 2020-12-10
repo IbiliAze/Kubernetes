@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-[ Custom Certificates ]
+[ Custom Certificates with CFSSL ]
 
 #CSR
 cat <<EOF | cfssl genkey - | cfssljson -bare server
