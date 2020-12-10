@@ -3,22 +3,7 @@
 
 [ Custom Certificates with CFSSL ]
 
-#CSR
-cat <<EOF | cfssl genkey - | cfssljson -bare server
-{
-    "hosts": [
-        "my-svc.my-namespace.svc.cluster.local",
-        "my-pod.my-namespace.pod.cluster.local",
-        "172.168.0.24",
-        "10.0.34.2"
-    ],
-    "CN": "my-pod.my-namespace.pod.cluster.local",
-    "key": {
-        "algo": "ecdsa",
-        "size": 256
-    }
-}
-EOF 
+cfssl gencret -initca CACSR.json | cfssljson -bare ca
 
 
 
