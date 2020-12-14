@@ -2,8 +2,6 @@
 
 
 
-[ Installation ]
-
 echo step 1
 curl -L  https://github.com/coreos/etcd/releases/download/v3.3.5/etcd-v3.3.5-linux-amd64.tar.gz -o etcd-v3.3.5-linux-amd64.tar.gz
 
@@ -72,5 +70,4 @@ ETCDCTL_API=3 etcdctl member list \
     --cacert=/etc/etcd/ca.pem \
     --cert=/etc/etcd/kubernetes.pem \
     --key=/etc/etcd/kubernetes-key.pem #test for endpoints
-
 
