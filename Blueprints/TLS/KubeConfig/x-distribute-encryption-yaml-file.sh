@@ -2,4 +2,4 @@
 
 
 
-sudo scp -i ~/.ssh/ubuntuKP.pem resources/EncryptionConfig.yml ec2-user@35.175.198.240:~/
+sudo scp -i ~/.ssh/ubuntuKP.pem resources/EncryptionConfig.yml ec2-user@52.87.215.203:~/
