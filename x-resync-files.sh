@@ -1,5 +1,5 @@
 #!/bin/bash
 
 
-cp Blueprints/TLS/ Blueprints/ControlPlane/ Blueprints/WorkerNode/ Projects/KubernetesTheHardWay/ -r
+cp Blueprints/Networking Blueprints/TLS/ Blueprints/ControlPlane/ Blueprints/WorkerNode/ Projects/KubernetesTheHardWay/ -r
 

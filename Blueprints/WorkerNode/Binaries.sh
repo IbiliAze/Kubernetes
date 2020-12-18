@@ -8,7 +8,7 @@ yum install -y socat conntarck ipset
 
 echo step 2
 wget -q --show-progress --https-only --timestamping \
-    https://github.com/kubernetes-incubator/cri-tools/releases/download/v1.0.0-beta.0/crictl-v1.0.0-beta.0-linu
+    https://github.com/kubernetes-incubator/cri-tools/releases/download/v1.0.0-beta.0/crictl-v1.0.0-beta.0-linux-amd64.tar.gz \
     https://storage.googleapis.com/kubernetes-the-hard-way/runsc \
     https://github.com/opencontainers/runc/releases/download/v1.0.0-rc5/runc.amd64 \
     https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
