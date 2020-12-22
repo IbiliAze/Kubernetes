@@ -3,16 +3,16 @@
 
 
 echo step 1
-wget https://github.com/istio/istio/releases/download/1.8.1/istio-1.8.1-linux.tar.gz
+curl -L https://istio.io/downloadIstio | sh -
 
 echo step 2
-tar -xvf istio-1.8.1-linux.tar.gz
-
-echo step 3
 mv istio-1.8.1/bin/istioctl /usr/bin
 
+echo step 3
+istioctl install --set profile=demo -y
+
 echo step 4
-kubectl apply -f istio-1.8.1/install/kubernetes/istio-demo.yaml
+kubectl apply -f istio-1.8.1/samples/bookinfo/platform/kube/bookinfo.yaml
 
 echo step 5
 kubectl get pods -n istio-system
