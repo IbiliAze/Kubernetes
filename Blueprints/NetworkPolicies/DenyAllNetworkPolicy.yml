@@ -4,9 +4,7 @@ metadata:
   name: deny-all
   namespace: np-test
 spec:
-  podSelector: 
-    matchLabels:
-      app: nginx
+  podSelector: {} 
   policyTypes:
   - Ingress
   - Egress
