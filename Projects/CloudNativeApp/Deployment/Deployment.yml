@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pref
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: pref
+  template:
+    metadata:
+      labels:
+        app: pref
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 80
+            preference:
+              matchExpressions:
+              - key: az
+                operator: In
+                values:
+                - zone1
+          - weight: 20
+            preference:
+              matchExpressions:
+              - key: share-type
+                operator: In
+                values:
+                - dedicated
+       
+      containers:
+      - args:
+        - "sleep"
+        - "3600"
+        image: busybox
+        name: myimage          
