@@ -405,12 +405,12 @@ The following TLS certificates/key are supplied for connecting to the server wit
  Client key: /opt/KUCM00302/etcd-client.key
 
 Answer: 
-etcdctl snapshot save /srv/data/etcd-snapshot.db \
+ETCDCTL_API=3 etcdctl snapshot save /srv/data/etcd-snapshot.db \
  --endpoints=https://127.0.0.1:2379 \
  --cacert=/opt/KUCM00302/ca.crt \
  --cert=/opt/KUCM00302/etcd-client.crt \
  --key=/opt/KUCM00302/etcd-client.key
-etcdctl snapshot status /srv/data/etcd-snapshot.db
+ETCDCTL_API=3 etcdctl snapshot status /srv/data/etcd-snapshot.db
 
 
 /// 33). Scale the deployment "webserver" to 6 pods
@@ -425,7 +425,7 @@ k get pods
 and write the number to /opt/KUCC00104/kucc00104.txt
 
 
-x// 35). Add a new node
+x//x 35). Add a new node
 
 Answer:
 ssh master-node
@@ -441,7 +441,7 @@ exit
 exit
 
 
-xxx/ 36) Fix kubelet on master node
+xxx// 36) Fix kubelet on master node
 
 Answer:
 sudo su -
@@ -452,19 +452,19 @@ systemctl stop firewalld
 systemctl disable firewalld
 
 
-/ 37). Check if metrics server is responding
+/x 37). Check if metrics server is responding
 
 Answer:
 k get --raw /apis/metrics.k8.io/
 
 
-x/ 38). Get metrics info for busybox pod containers
+x/x 38). Get metrics info for busybox pod containers
 
 Answer:
 k top pods busybox --containers
 
 
-/ 39). Run a pod with liveness probe
+// 39). Run a pod with liveness probe
 
 Answer:
 apiVersion: v1
@@ -479,10 +479,12 @@ spec:
       httpGet:
         path: /
         port: 80
+      initialDelaySeconds: 5
+      periodSeconds: 5
 kubectl get ep
 
 
-x 40) Run a pod with a readyness probe
+x/ 40) Run a pod with a readyness probe
 
 Answer:
 apiVersion: v1
@@ -502,25 +504,25 @@ spec:
 kubectl get ep
 
 
-/ 41). Check container logs
+// 41). Check container logs
 
 Answer:
 cd /var/log/containers
 
 
-/ 42). Get logs from pod pod1, container2
+/// 42). Get logs from pod pod1, container2
 
 Answer:
 kubectl logs pod1 -c container2
 
 
-x/ 43). Get logs from previously ran pod1 and all containers in it
+x/// 43). Get logs from previously ran pod1 and all containers in it
 
 Answer:
 kubectl logs -p pod1 --all-containers=true
 
 
-/// 44). Run a pod with a service account "my-sa"
+///// 44). Run a pod with a service account "my-sa"
 
 Answer:
 apiVersion: v1
@@ -551,7 +553,7 @@ kubectl config use-context kubernetes
 kubectl get nodes
 
 
-x/ 46). Start a busybox shell with the container name busybox
+x// 46). Start a busybox shell with the container name busybox
 
 Answer:
 k exec busybox -c busybox -it -- /bin/sh
@@ -559,7 +561,7 @@ or
 k exec busybox -c busybox --stdin --tty -- /bin/sh
 
 
-47). Create a storage class with allowed volume expansion
+x 47). Create a storage class with allowed volume expansion
 
 Answer:
 apiVersion: storage.k8s.io/v1
@@ -570,7 +572,7 @@ provisioner: kubernetes.io/no-provisioner
 allowVolumeExpansion: true
 
 
-48) Create a PV with reclaim policies
+x 48) Create a PV with reclaim policies
 
 Answer:
 apiVersion: v1
@@ -588,7 +590,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain, Delete, Recycle
 
 
-x 49). Create a pod which uses a volume from PVC "claim1"
+xx 49). Create a pod which uses a volume from PVC "claim1"
 
 Answer:
 apiVersion: v1
@@ -609,7 +611,7 @@ spec:
       claimName: claim1
 
 
-50). Create a network policy
+x 50). Create a network policy
 
 Answer:
 apiVersion: networking.k8s.io/v1
@@ -633,14 +635,14 @@ spec:
       port: 80
 
 
-x 51). Go to nginx-app deployment revision 2
+x/ 51). Go to nginx-app deployment revision 2
 
 Answer:
 kubectl rollout undo deployment nginx-app --to-revision=2
 kubectl rollout status deployment nginx-app
 
 
-/ 52). Schedule a pod on node "node-1"
+// 52). Schedule a pod on node "node-1"
 
 Answer:
 apiVersion: v1
@@ -654,14 +656,14 @@ spec:
   nodeName: node-1
 
 
-53). Add a label "env:prod" to "node-1"
+// 53). Add a label "env:prod" to "node-1"
 
 Answer:
 kubectl label nodes node-1 env=prod
 kubectl get nodes --show-labels
 
 
-/ 54). create a pod with env from configmap "mycm", with key "NODE_ENV"
+/x 54). create a pod with env from configmap "mycm", with key "NODE_ENV"
 
 Answer:
 apiVersion: v1
@@ -680,7 +682,7 @@ spec:
           key: NODE_ENV
 
 
-55). create a pod with "mysec" as secret volume to /data
+// 55). create a pod with "mysec" as secret volume to /data
 
 Answer:
 apiVersion: v1
@@ -700,4 +702,198 @@ spec:
       secretName: mysec
 
 
-56). 
+/ 56). Schedule a pod with 250m of CPU and 128Mi of memory
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    resources:
+      requests:
+        cpu: 250m
+        memory: 128Mi
+
+
+/ 57). Create a pod that will run a command "echo hello world", if failed the pod will be terminated
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod
+spec:
+  containers:
+  - image: nginx
+    name: pod
+    livenessProbe:
+      exec:
+        command: ["echo hello world"]
+      initialDelaySeconds: 5
+      periodSeconds: 5
+
+  
+x 58). Create a pod with a startup probe
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod
+spec:
+  containers:
+  - image: nginx
+    name: pod
+    startupProbe:
+      httpGet:
+        path: /
+        port: 80
+      failureThreshold: 30
+      periodSeconds: 10
+kubectl get ep
+
+
+// 59). Create an init container, that sleeps for 30 seconds
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod
+spec:
+  containers:
+  - image: nginx
+    name: pod
+  initContainers:
+  - name: delay
+    image: busybox
+    command: ['sleep', '30']
+
+
+/ 60). Create a static pod at worker-node1
+
+Answer:
+ssh worker-node1
+sudo echo "apiVersion: v1
+kind: Pod
+metadata:
+  name: pod
+spec:
+  containers:
+  - image: nginx
+    name: nginx" > /etc/kubernetes/manifests/my-sp.yml
+sudo systemctl restart kubelet
+
+
+/ 61). Drain node "node-1" then uncordon it
+
+Answer:
+kubectl drain node-1 --ignore-daemonsets --delete-local-data --force
+or
+kubectl drain node-1 --ignore-daemonsets --delete-emptydir-data --force
+kubectl uncordon node-1
+
+
+62). Upgrade the master node
+
+Answer:
+ssh master-1
+sudo apt update && \
+  sudo apt install -y --allow-change-held-packages kubeadm=1.20
+kubectl drain master-1 --ignore-daemonsets
+sudo kubeadm upgrade plan
+sudo kubeadm upgrade apply v1.20
+kubectl uncordon master-1
+
+sudo apt update && \
+  sudo apt install -y --allow-change-held-packages kubelet=1.20 kubectl=1.20
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+
+kubectl get nodes
+
+
+63). Upgrade the worker node "node-1"
+
+Answer:
+ssh node-1
+sudo apt update && \
+  sudo apt install -y --allow-change-held-packages kubeadm=1.20
+exit
+
+ssh master-1
+kubectl drain node-1 --ignore-daemonsets --force
+exit
+
+ssh node-1
+sudo kubeadm upgrade node
+sudo apt update && \
+  sudo apt install -y --allow-change-held-packages kubelet=1.20 kubectl=1.20
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+exit
+
+ssh master-1
+kubectl uncordon node-1
+exit
+
+
+/ 64). Restore from a snapshot at /data
+
+Answer:
+ETCDCTL_API=3 etcdctl snapshot restore /data
+
+
+65). Create a role that allows to view pods and pod logs and bind to user "dev"
+
+Answer:
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources:
+  - pods
+  - pods/logs
+  verbs:
+  - get
+    watch
+    list
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-reader
+subjects:
+- kind: User
+  name: dev
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+
+
+66). Create a role binding that uses serviceAccountName "mysa" as a subject
+
+Answer:
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-reader
+subjects:
+- kind: ServiceAccount
+  name: mysa
+  namespace: default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+
+
+67). 
