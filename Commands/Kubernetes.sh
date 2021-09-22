@@ -203,7 +203,7 @@ kubectl create configmap MyConfigMap --from-literal=key1=value1 --from-literal=k
 
 
 
-[ Token ]
+[ Nodes ]
 
 kubeadm token generate #run on master
 kubeadm token create MyToken --ttl 2h --print-join-command #run after above

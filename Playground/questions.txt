@@ -1,0 +1,703 @@
+x// 1). Create a pod with environment variables as var1=value1. Check the environment variable in pod
+
+Answer:
+kubectl run nginx --image=nginx --restart=Never --env=var1=value1
+kubectl exec -it nginx -sh -c 'echo $var1'
+or
+kubectl exec -it nginx -- /bin/sh -c 'echo $var1'
+
+
+x// 2). Create a pod that echo hello world and then exists. Have the pod deleted automatically when its completed
+
+Answer:
+kubectl run busybox --image=busybox -it --rm --restart=Never --command -- /bin/sh -c 'echo hello world'
+or
+kubectl run busybox --image=busybox -it --rm --restart=Never -- /bin/sh -c 'echo hello world'
+kubectl get pods
+
+
+xx// 4). List the nginx pod with custom columns POD_NAME and POD_STATUS
+
+Answer:
+kubectl get pods -o yaml #get the yaml output to parse
+kubectl get pods -o custom-columns="POD_NAME:metadata.name, POD_STATUS:.status.conditions[-1].type"
+or
+kubectl get pods -o custom-columns=POD_NAME:.metadata.name,POD_STATUS:.status.conditions[-1].type
+
+
+// 5). Create a pod as follows:
+ Name: mongo
+ Using Image: mongo
+ In a new Kubernetes namespace named: my-website
+
+Answer:
+kubectl create ns my-website
+kubectl run --image=mongo -n my-website
+kubectl get pods -n my-website
+
+
+x// 7). List pod logs named "frontend" and search for the pattern "started" and write it to a file "/opt/error-logs"
+
+Answer:
+kubectl logs frontend | grep -i started > /opt/error-logs
+
+
+xx// 8). List all persistent volumes sorted by capacity, saving the full kubectl output to
+/opt/KUCC00102/volume_list. Use kubectl's own functionality for sorting the output, and do not manipulate it any further
+
+Answer:
+kubectl get pv -o yaml
+kubectl get pv --sort-by=.spec.capacity.storage > /opt/KUCC00102/volume_list
+
+
+// 9). Create a namespace called 'development' and a pod with image nginx called nginx on this namespace.
+
+Answer:
+kubectl create ns development
+kubectl run nginx --image=nginx --restart=Never -n=development
+
+
+x// 10). Create a pod as follows:
+ Name: non-persistent-redis
+ container Image: redis
+ Volume with name: cache-control
+ Mount path: /data/redis
+The pod should launch in the staging namespace and the volume must not be persistent.
+
+Answer:
+kubectl run non-persistent-redis --image=redis -n staging --dry-run=client -o yaml > pod.yaml
+vim pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: non-persistent-redis
+  namespace: staging
+spec:
+  containers:
+  - name: redis
+    image: redis
+    volumeMounts:
+    - name: cache-control
+      mountPath: /data/redis
+  volumes:
+  - name: cache-control
+    emptyDir: {}
+kubectl create -f pod.yaml
+kubectl get pods -n staging
+
+
+x/ 11). Ensure a single instance of pod nginx is running on each node of the Kubernetes cluster where nginx also represents the 
+ Image name which has to be used. Do not override any taints currently in place.
+ Use DaemonSet to complete this task and use ds-kusc00201 as DaemonSet name.
+
+Answer:
+vim ds.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ds-kusc00201
+spec:
+  selector:
+    matchLabels:
+      name: fluentd-elasticsearch
+  template:
+    metadata:
+      labels:
+        name: fluentd-elasticsearch
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+kubectl create -f ds.yaml
+
+
+// 12). Get list of all pods in all namespaces and write it to file "/opt/pods-list.yaml"
+
+Answer:
+kubectl get pods --all-namespaces > /opt/pods-list.yaml
+
+
+// 13). Get list of all the pods showing name and namespace with a jsonpath expression.
+
+Answer:
+kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.namespace}{"\n"}{end}'
+
+
+14). Use context: kubectl config use-context k8s-c2-AC
+
+The cluster admin asked you to find out the following information about etcd running on cluster2-master1:
+
+Server private key location
+Server certificate expiration date
+Is client certificate authentication enabled
+Write these information into /opt/course/p1/etcd-info.txt
+
+Finally you're asked to save an etcd snapshot at /etc/etcd-snapshot.db on cluster2-master1 and display its status.
+
+Answer:
+kubectl config use-context k8s-c2-AC
+kubectl get nodes
+ssh cluster2-master1
+kubectl -n kube-system get pod
+find /etc/kubernetes/manifests/
+vim /etc/kubernetes/manifests/etcd.yaml
+openssl x509  -noout -text -in /etc/kubernetes/pki/etcd/server.crt | grep Validity -A2
+echo "Server private key location: /etc/kubernetes/pki/etcd/server.key
+Server certificate expiration date: Sep  4 15:28:39 2021 GMT
+Is client certificate authentication enabled: yes" > /opt/course/p1/etcd-info.txt
+ETCDCTL_API=3 etcdctl snapshot save /etc/etcd-snapshot.db
+ETCDCTL_API=3 etcdctl snapshot save /etc/etcd-snapshot.db \
+  --cacert /etc/kubernetes/pki/etcd/ca.crt \
+  --cert /etc/kubernetes/pki/etcd/server.crt \
+  --key /etc/kubernetes/pki/etcd/server.key
+ETCDCTL_API=3 etcdctl snapshot status /etc/etcd-snapshot.db
+
+
+x/ 15). Create 2 nginx image pods in which one of them is labelled with env=prod and another one labelled with env=dev and verify the same.
+
+Answer:
+kubectl run --image=nginx --labels=env=prod nginx-pod --dry-run=client -o yaml
+kubectl run --image=nginx --labels=env=prod nginx-pod
+kubectl run --image=nginx --labels=env=dev nginx-pod
+kubectl get po --show-labels
+kubectl get po -l env=prod
+kubectl get po -l env=dev
+
+
+// 16). Print pod name and start time to '/opt/pod-status' file
+
+Answer:
+kubectl get pods nginx-pod -o yaml
+k get pod -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.startTime}{"\n"}{end}'
+or
+k get pod -o=jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.status.startTime}{'\n'}{end}"
+
+
+/x/ 17). Create a busybox pod and add 'sleep 3600' command
+
+Answer:
+kubectl run busybox --image=busybox --restart=Never -- /bin/sh -c 'sleep 3600'
+
+
+// 18). List 'nginx-dev' and 'nginx-prod' pod and delete those pods
+
+Answer:
+kubectl get pods -o wide
+kubectl delete po nginx-dev
+kubectl delete po nginx-prod
+
+
+xx/ 19). Create a redis pod and mount "redis-config" as "redis.conf" inside redis container, name the config volume as
+ "redis-volume" redis-config path - /opt/redis-config
+
+Answer:
+k create configmap redis-config --from-file redis.conf
+k run redis --image=redis --dry-run=client -o yaml > redis.yaml
+
+vim redis.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+spec:
+  containers:
+  - image: redis
+    name: redis
+    volumeMounts:
+    - name: redis-volume
+      mountPath: /opt/redis-config
+  volumes:
+  - name: redis-volume
+    configMap:
+      name: redis-config
+
+kubectl  apply -f redis.yaml
+
+
+xx 20). Create a deployment as follows:
+ Name: nginx-random
+ Exposed via a service: nginx-random
+ Ensure that the service & pod are accessible via their respective DNS records
+ The container(s) within any pod(s) running as a part of this deployment should use the nginx Image
+Next, use the utilitynslookup to lookup the DNS records of the service & pod and write the output to
+/opt/KUNW00601/service.dns and /opt/KUNW00601/pod.dns respectively.
+
+Answer:
+kubectl create deployment nginx-random --image=nginx
+kubectl expose deployment nginx-random --name=nginx-random --port=80 --target-port=80
+kubectl run busybox --image=busybox --dry-run=client -o yaml --command sleep 3600
+kubectl get pods -o wide | grep nginx-random
+kubectl exec -it busybox -- nslookup kubernetes.default
+kubectl exec -it busybox -- nslookup nginx-random
+kubectl exec -it busybox -- nslookup nginx-random > /opt/KUNW00601/service.dns
+kubectl exec -it busybox -- nslookup 10-44-1-5.default.pod.cluster.local
+kubectl exec -it busybox -- nslookup 10-44-1-5.default.pod.cluster.local > /opt/KUNW00601/pod.dns
+
+
+// 21). Given a partially-functioning Kubernetes cluster, identify symptoms of failure on the cluster.
+Determine the node, the failing service, and take actions to bring upthe failed service and restore the health of the cluster. 
+Ensure that anychanges are made permanently.
+You can ssh to the relevant Inodes (bk8s-master-0orbk8s-node-0) using:
+[student@node-1] $ ssh <nodename>
+You can assume elevated privileges on any node in the cluster with the following command:
+[student@nodename] $ | sudo -i
+
+Answer:
+kubectl config use-context bk8s
+ssh bk8-master-0
+sudo -i
+journalctl -u kubelet
+cd /var/log; more syslog | tail 120 | grep kubelet; cd ../..
+vim /var/lib/kubelet/config.yaml
+systemctl restart kubelet
+systemctl enable kubelet
+kubectl get nodes
+exit
+exit
+
+
+// 22). Monitor the logs of pod foo and:
+ Extract log lines corresponding to error unable-to-access-website
+ Write them to /opt/KULM00201/foo
+
+Answer:
+kubectl logs foo | grep unable-to-access-website
+kubectl logs foo | grep unable-to-access-website > /opt/KULM00201/foo
+
+
+x// 23). Create a deployment as follows:
+ Name: nginx-app
+ Using container nginx with version 1.11.10-alpine
+ The deployment should contain 3 replicas
+ Next, deploy the application with new version 1.11.13-alpine, by performing
+
+Answer:
+kubectl create deployment nginx-app --image=nginx:1.11.10-alpine --replicas=3 --dry-run=client -o yaml > app.yaml
+kubectl create -f app.yaml
+kubectl set image deployment nginx-app nginx=nginx:1.11.13-alpine --record
+kubectl rollout undo deployment nginx-app
+kubectl rollout history deployment nginx-app
+kubectl rollout status deployment nginx-app
+
+
+xx// 24). Set the node named ek8s-node-1 as unavailable and reschedule all the pods running on it.
+
+Answer:
+kubectl config use-context ek8s
+kubectl get nodes
+kubectl drain ek8s-node-1 --ignore-daemonsets --delete-local-data --force
+or
+kubectl drain ek8s-node-1 --ignore-daemonsets --delete-emptydir-data --force
+
+
+/x 25). From the pod label name=cpu-utilizer, find pods running high CPU workloads and
+write the name of the pod consuming most CPU to the file /opt/KUTR00102/KUTR00102.txt (which already exists).
+
+Answer:
+kubectl top pods -l name=cpu-utilizer
+vim /opt/KUTR00102/KUTR00102.txt #add the top pod name
+
+
+// 26). Check the Image version of nginx-dev pod using jsonpath
+
+Answer:
+k get pod nginx-dev -o jsonpath='{.spec.containers[].image}{"\n"}'
+
+
+// 27). List all the pods sorted by name
+
+Answer:
+kubectl get pods --sort-by='{.metadata.name}'
+
+
+// 28). Create a pod that having 3 containers in it
+
+Answer:
+k run multi-container --image=nginx --dry-run=client -o yaml > multi-container.yaml
+vim multi-container.yaml
+# append "- image: redis
+name: redis-container
+- image: consul
+name: consul-cont" to containers
+kubectl create -f multi-container.yaml
+
+
+// 29). Schedule a pod as follows:
+ Name: nginx-kusc00101
+ Image: nginx
+ Node selector: disk=ssd
+
+Answer:
+kubectl run nginx-kusc00101 --image=nginx --dry-run=client -o yaml > nginx-kusc00101.yaml
+vim nginx-kusc00101.yaml
+append "nodeSelector:
+    disk: ssd" to spec
+kubectl apply -f nginx-kusc00101.yaml
+kubectl get pods
+
+as such: 
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-kusc00101
+spec:
+  containers:
+  - image: nginx
+    name: nginx-kusc00101
+  nodeSelector:
+    disk: ssd
+
+
+xx/ 30). Create a persistent volume with name app-data, of capacity 2Gi and access mode ReadWriteMany. 
+ The type of volume is hostPath and its location is /srv/app-data.
+
+Answer:
+echo "apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: app-data
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteMany
+  hostPath:
+    path: /srv/app-data
+  storageClassName: shared" > pv.yaml
+kubectl create -f pv.yaml
+kubectl get pv
+
+
+// 31). Create a busybox pod that runs the command "env" and save the output to "envpod" file
+
+Answer:
+kubectl run busybox --image=busybox -it --rm --restart=Never --command -- /bin/sh -c 'env > envpod.yaml'
+or
+kubectl run busybox --image=busybox --restart=Never --rm -it -- env > envpod.yaml
+
+
+/x 32). A Kubernetes worker node, named wk8s-node-0is in state NotReady.
+Investigate why this is the case, and perform any appropriate steps to bring the node to
+a Readystate, ensuring that any changes are made permanent.
+You can ssh to the failednode using:
+[student@node-1] $ ssh hWk8s-node-0
+You can assume elevated privileges on the node with th efollowing command:
+[student@w8ks-node-0] $ sudo ?Ci
+
+Answer:
+k get nodes
+ssh hWk8s-node-0
+sudo -i
+journalctl -u kubelet
+cd /var/log; more syslog | tail 120 | grep kubelet; cd ../..
+vim /var/lib/kubelet/config.yaml
+systemctl restart kubelet
+systemctl enable kubelet
+exit
+exit
+kubectl get nodes
+
+
+xxx/ 32). Create a snapshot of the etcd instance running at https://127.0.0.1:2379, saving the snapshot to the file path /srv/data/etcd-snapshot.db.
+The following TLS certificates/key are supplied for connecting to the server with etcdctl:
+ CA certificate: /opt/KUCM00302/ca.crt
+ Client certificate: /opt/KUCM00302/etcd-client.crt
+ Client key: /opt/KUCM00302/etcd-client.key
+
+Answer: 
+etcdctl snapshot save /srv/data/etcd-snapshot.db \
+ --endpoints=https://127.0.0.1:2379 \
+ --cacert=/opt/KUCM00302/ca.crt \
+ --cert=/opt/KUCM00302/etcd-client.crt \
+ --key=/opt/KUCM00302/etcd-client.key
+etcdctl snapshot status /srv/data/etcd-snapshot.db
+
+
+/// 33). Scale the deployment "webserver" to 6 pods
+
+Answer:
+k get deployments
+k scale deploy webserver --replicas=6
+k get pods
+
+
+? 34). Check to see how many worker nodes are ready (not including nodes tainted NoSchedule) 
+and write the number to /opt/KUCC00104/kucc00104.txt
+
+
+x// 35). Add a new node
+
+Answer:
+ssh master-node
+sudo su -
+kubeadm token generate #or below command
+kubeadm token create $(kubeadm token generate) --ttl 2hr --print-join-command
+exit
+exit
+ssh worker node
+sudo su -
+#paste the output from the command above
+exit
+exit
+
+
+xxx/ 36) Fix kubelet on master node
+
+Answer:
+sudo su -
+swapoff -a && sed -i '/swap / s/^/#/' /etc/fstab
+
+systemctl status firewalld
+systemctl stop firewalld
+systemctl disable firewalld
+
+
+/ 37). Check if metrics server is responding
+
+Answer:
+k get --raw /apis/metrics.k8.io/
+
+
+x/ 38). Get metrics info for busybox pod containers
+
+Answer:
+k top pods busybox --containers
+
+
+/ 39). Run a pod with liveness probe
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod
+spec:
+  containers:
+  - image: nginx
+    name: pod
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+kubectl get ep
+
+
+x 40) Run a pod with a readyness probe
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod
+spec:
+  containers:
+  - image: nginx
+    name: pod
+    readynessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 5
+      periodSeconds: 5
+kubectl get ep
+
+
+/ 41). Check container logs
+
+Answer:
+cd /var/log/containers
+
+
+/ 42). Get logs from pod pod1, container2
+
+Answer:
+kubectl logs pod1 -c container2
+
+
+x/ 43). Get logs from previously ran pod1 and all containers in it
+
+Answer:
+kubectl logs -p pod1 --all-containers=true
+
+
+/// 44). Run a pod with a service account "my-sa"
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod
+spec:
+  serviceAccountName: my-sa
+  containers:
+  - image: nginx
+    name: pod
+
+
+45). Add a new user "user1"
+
+Answer:
+# on the master node
+kubectl config set-credentials user1 --username=user1 --password=pass1
+kubectl create clusterrolebinding anon-users --clusterrole=cluster-admin --user=system:anonymous
+scp /etc/kubernetes/pki/ca.crt ibili@<IP of user1's machine>:~/
+kubectl config view # note the server IP
+
+# user1's machine
+kubectl config set-cluster kubernetes --server=<IP of master server> --certificate-authority=ca.crt --embed-certs=true
+kubectl config set-credentials user1 --username=user1 --password=pass1
+kubectl config set-context kubernetes --cluster=kubernetes --user=user1 --namespace=default
+kubectl config use-context kubernetes
+kubectl get nodes
+
+
+x/ 46). Start a busybox shell with the container name busybox
+
+Answer:
+k exec busybox -c busybox -it -- /bin/sh
+or
+k exec busybox -c busybox --stdin --tty -- /bin/sh
+
+
+47). Create a storage class with allowed volume expansion
+
+Answer:
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: localdisk
+provisioner: kubernetes.io/no-provisioner
+allowVolumeExpansion: true
+
+
+48) Create a PV with reclaim policies
+
+Answer:
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: app-data
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteMany
+  hostPath:
+    path: /srv/app-data
+  storageClassName: shared
+  persistentVolumeReclaimPolicy: Retain, Delete, Recycle
+
+
+x 49). Create a pod which uses a volume from PVC "claim1"
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: non-persistent-redis
+  namespace: staging
+spec:
+  containers:
+  - name: redis
+    image: redis
+    volumeMounts:
+    - name: myvol
+      mountPath: /data
+  volumes:
+  - name: myvol
+    persistentVolumeClaim:
+      claimName: claim1
+
+
+50). Create a network policy
+
+Answer:
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mynp
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          team: np-test
+    ports:
+    - protocol: TCP
+      port: 80
+
+
+x 51). Go to nginx-app deployment revision 2
+
+Answer:
+kubectl rollout undo deployment nginx-app --to-revision=2
+kubectl rollout status deployment nginx-app
+
+
+/ 52). Schedule a pod on node "node-1"
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-kusc00101
+spec:
+  containers:
+  - image: nginx
+    name: nginx-kusc00101
+  nodeName: node-1
+
+
+53). Add a label "env:prod" to "node-1"
+
+Answer:
+kubectl label nodes node-1 env=prod
+kubectl get nodes --show-labels
+
+
+/ 54). create a pod with env from configmap "mycm", with key "NODE_ENV"
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-kusc00101
+spec:
+  containers:
+  - image: nginx
+    name: nginx-kusc00101
+    env:
+    - name: NODE_ENV
+      valueFrom:
+        configMapKeyRef: 
+          name: mycm
+          key: NODE_ENV
+
+
+55). create a pod with "mysec" as secret volume to /data
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-kusc00101
+spec:
+  containers:
+  - image: nginx
+    name: nginx-kusc00101
+    volumeMounts:
+    - name: mysec
+      mountPath: /data
+  volumes:
+  - name: mysec
+    secret:
+      secretName: mysec
+
+
+56). 
