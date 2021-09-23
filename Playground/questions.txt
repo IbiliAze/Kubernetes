@@ -452,10 +452,10 @@ systemctl stop firewalld
 systemctl disable firewalld
 
 
-/x 37). Check if metrics server is responding
+/x/ 37). Check if metrics server is responding
 
 Answer:
-k get --raw /apis/metrics.k8.io/
+k get --raw /apis/metrics.k8s.io/
 
 
 x/x 38). Get metrics info for busybox pod containers
