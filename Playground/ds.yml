@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ds-kusc00201
+spec:
+  selector:
+    matchLabels:
+      name: fluentd-elasticsearch
+  template:
+    metadata:
+      labels:
+        app: fluentd-elasticsearch
+    spec:
+      containers:
+      - image: nginx
+        name: nginx

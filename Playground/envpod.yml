@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-kusc00101
+spec:
+  containers:
+  - image: nginx
+    name: nginx-kusc00101
+    env:
+      name: NODE_ENV
+      valueFrom:
+        configMapKeyRef:
+          name: mycm
+          key: NODE_ENV
