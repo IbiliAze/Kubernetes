@@ -348,7 +348,7 @@ spec:
     disk: ssd
 
 
-xx//xx 30). Create a persistent volume with name app-data, of capacity 2Gi and access mode ReadWriteMany. 
+xx//xx/ 30). Create a persistent volume with name app-data, of capacity 2Gi and access mode ReadWriteMany. 
  The type of volume is hostPath and its location is /srv/app-data.
 
 Answer:
@@ -590,7 +590,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain, Delete, Recycle
 
 
-xx/// 49). Create a pod which uses a volume from PVC "claim1"
+xx//// 49). Create a pod which uses a volume from PVC "claim1"
 
 Answer:
 apiVersion: v1
@@ -611,7 +611,7 @@ spec:
       claimName: claim1
 
 
-xxx 50). Create a network policy
+xxxx 50). Create a network policy
 
 Answer:
 apiVersion: networking.k8s.io/v1
@@ -635,14 +635,14 @@ spec:
       port: 80
 
 
-x///// 51). Go to nginx-app deployment revision 2
+x////// 51). Go to nginx-app deployment revision 2
 
 Answer:
 kubectl rollout undo deployment nginx-app --to-revision=2
 kubectl rollout status deployment nginx-app
 
 
-////// 52). Schedule a pod on node "node-1"
+/////// 52). Schedule a pod on node "node-1"
 
 Answer:
 apiVersion: v1
@@ -938,3 +938,233 @@ kubectl --kubeconfig bob.kubeconfig get pods \
   --namespace newusers
 
 cp bob.kubeconfig ~/.kube/config
+
+
+/ 71). Create and configure a service "front-end-service" access through a NodePort that routes
+ traffic to "front-end" pod
+
+Answer:
+kubectl expose po front-end --name front-end-service --port 80 --target-port 80 --type NodePort
+
+
+/ 72). Create an nginx pod running on port 80
+
+Answer:
+kubectl run mynginx --image=nginx --restart=Never --port=80
+
+
+/ 73). Create a configmap with literal value appname=myapp
+
+Answer:
+k create cm mycm --from-literal=appname=myapp
+
+
+74). For this item, you will have to ssh to the nodes ik8s-master-0 and ik8s-node-0 and complete all tasks on these nodes. 
+Ensure that you return to the base node (hostname:node-1) when you have completed this item.
+Context
+As an administrator of a small development team, you have been asked to set up a Kubernetes cluster to test the viability of a new application.
+Task
+You must use kubeadm to perform this task. Any kubeadm invocations will require the use of the --ignore-preflight-errors=all option.
+ Configure the node ik8s-master-O as a masternode. .
+ Join the node ik8s-node-o to the cluster.
+
+Answer:
+ssh ik8s-master-0
+kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=all
+mkdir -p $HOME/.kube/config
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+logout
+
+ssh ik8s-node-0
+<paste the join command>
+
+
+// 75). Create an nginx pod and list the pod with different levels of verbosity
+
+Answer:
+kubectl run myimage --image=nginx --restart=Never
+kubectl get po --v 1
+kubectl get po --v 3
+kubectl get po --v 5
+kubectl get po --v 7
+kubectl get po --v 9
+
+
+/ 76). Check that the pod "nginx-pod" is responding on ports 5000 and 6000. Do this using port-forwarding
+
+Answer:
+k port-forward pod/nginx-pod 5000 6000
+
+ssh another-node
+curl --head <ip of nginx-pod:5000>
+curl --head <ip of nginx-pod:6000>
+
+
+/ 77). Check that the pod "nginx-pod" is responding on port 8080 locally and 80 on the pod. Do this using port-forwarding
+
+Answer:
+k port-forward pod/nginx-pod 8080:80
+
+ssh another-node
+curl --head <ip of nginx-pod:8080>
+
+
+/ 78). Create a pod with a termination message path to /var/termination.log
+
+Answer:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: non-persistent-redis
+  namespace: staging
+spec:
+  containers:
+  - name: redis
+    image: redis
+    terminationMessagePath: /var/termination.log
+
+
+79). Create a custom cert for a pod
+
+Answer:
+cat <<EOF | cfssl genkey - | cfssljson -bare server
+{
+  "hosts": [
+    "my-svc.my-namespace.svc.cluster.local",
+    "my-pod.my-namespace.svc.cluster.local",
+    "172.168.0.24",
+    "10.0.32.2"
+  ],
+  "CN": "my-pod.my-namespace.svc.cluster.local",
+  "key": {
+    "algo": "ecdsa",
+    "size": 256
+  }
+}
+EOF
+
+cat << EOF | kubectl create -f - apiVersion: certificates.k8s.io/v1beta1
+kind: CertificateSigningRequest
+metadata:
+  name: pod-csr.web
+spec:
+  groups:
+  - system:authenticated
+  request: $(cat server.csr | base64 | tr -f '\n')
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+EOF
+
+k get csr pod-csr.web -o jsonpath='{.status.certificate}' | base64 --decode > server.crt
+
+
+80). Modify the default serviceaccount to use a custom DPR secret
+
+Answer:
+k create secret docker-registry mypr \
+  --docker-server=https://example.com \
+  --docker-username=ibi \
+  --docker-password=cisco123 \
+  --docker-email=ibi@example.com
+k patch sa default -p '{"imagePullSecrets": [{"name": "mypr"}]}'
+k get sa default -o yaml
+
+
+81). Create a pod container with a guest user context
+
+Answer:
+cat << EOF | kubectl create -f - apiVersion: v1
+kind: Pod
+metadata:
+  name: mypo
+  namespace: staging
+spec:
+  containers:
+  - name: redis
+    image: redis
+    securityContext:
+      runAsUser: 405
+EOF
+k exec mypo id 
+
+
+82). Create a pod container with a non-root user context
+
+Answer:
+cat << EOF | kubectl create -f - apiVersion: v1
+kind: Pod
+metadata:
+  name: mypo
+  namespace: staging
+spec:
+  containers:
+  - name: redis
+    image: redis
+    securityContext:
+      runAsNonRoot: true
+EOF
+k exec mypo id 
+
+
+83). Create a pod container with a privileged mode
+
+Answer:
+cat << EOF | kubectl create -f - apiVersion: v1
+kind: Pod
+metadata:
+  name: myprivpo
+  namespace: staging
+spec:
+  containers:
+  - name: redis
+    image: redis
+    securityContext:
+      privileged: true
+EOF
+k exec mypo ls /dev # should show less
+k exec myprivpo ls /dev
+
+
+84). Create a pod container with "SYS_TIME" and "NET_ADMIN" capabilities, and no "CHOWN" capability
+
+Answer:
+cat << EOF | kubectl create -f - apiVersion: v1
+kind: Pod
+metadata:
+  name: myprivpo
+  namespace: staging
+spec:
+  containers:
+  - name: redis
+    image: redis
+    securityContext:
+       capabilities:
+         add:
+         - SYS_TIME
+         - NET_ADMIN
+         drop:
+         - CHOWN
+EOF
+k exec myprivpo ls /dev
+
+
+85). Create a pod container with readyonly user
+
+Answer:
+cat << EOF | kubectl create -f - apiVersion: v1
+kind: Pod
+metadata:
+  name: myprivpo
+  namespace: staging
+spec:
+  containers:
+  - name: redis
+    image: redis
+    securityContext:
+      readOnlyRootFileSystem: true
+EOF
+k exec myprivpo touch file #should receive error
